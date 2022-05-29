@@ -252,15 +252,45 @@ def enter_pin(callback):
     else:
         res = requests.get(f'https://rinh-api.kovalev.team/employee/dto/{callback.data}')
         res = res.json()
+        if res['department'] is None:
+            kafedra_prepod = "\n 📖 КАФЕДРА: -"
+        else:
+            kafedra_prepod = f"\n 📖 КАФЕДРА: {res['department']['name']}"
+
+        if res['institute'] is None:
+            institute_prepod = "\n 🏫 ИНСТИТУТ: -"
+        else:
+            institute_prepod = f"\n 🏫 ИНСТИТУТ: {res['institute']['name']}"
+
+        if res['employee']['email'] is None:
+            email_prepod = "\n 📧 ПОЧТА: -"
+        else:
+            email_prepod = f"\n 📧 ПОЧТА: {res['employee']['email']}"
+
+        if res['employee']['phone'] is None:
+            telef_prepod = "\n 📱 ТЕЛЕФОН: -"
+        else:
+            telef_prepod = f"\n 📱 ТЕЛЕФОН: {res['employee']['phone']}"
+
+        if res['employee']['authorUrlProfile'] is None:
+            profil_prepod = "\n 💻 ПРОФИЛЬ 'СТАНКИН': -"
+        else:
+            profil_prepod = f"\n 💻 ПРОФИЛЬ 'СТАНКИН': {res['employee']['authorUrlProfile']}"
+
+        if res['employee']["avatarUrl"] is None:
+            bot.send_photo(callback.message.chat.id, photo=open('NoAvatar.jpg', 'rb'))
+        else:
+            bot.send_photo(callback.message.chat.id, res['employee']["avatarUrl"])
+
         text = "👨‍🏫 ФИО: " + res['employee']['fullName']
-        text += f"\n 📖 КАФЕДРА: {res['department']['name']}"
-        text += f"\n 🏫 ИНСТИТУТ: {res['institute']['name']}"
-        text += f"\n 📧 ПОЧТА: {res['employee']['email']}"
-        text += f"\n 📱 ТЕЛЕФОН: {res['employee']['phone']}"
-        text += f"\n 💻 ПРОФИЛЬ 'СТАНКИН': {res['employee']['authorUrlProfile']}"
-        bot.send_photo(callback.message.chat.id, res['employee']["avatarUrl"])
+        text += kafedra_prepod
+        text += institute_prepod
+        text += email_prepod
+        text += telef_prepod
+        text += profil_prepod
         bot.send_message(callback.message.chat.id, text)
         bot.send_message()
+
 
 
 @bot.message_handler(func=lambda message: message.text == '🔍 Help')
